@@ -6,13 +6,14 @@ import web.model.Car;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CarsServiceImpl implements CarsService {
-
+    private List<Car> cars;
     @Override
-    public List<Car> getCars() {
-        List<Car> cars = new ArrayList<>();
+    public List<Car> getCars(Integer count) {
+        cars =new ArrayList<>();
         Car car = new Car("Ford", "Black", 3.5);
         Car car2 = new Car("Kia", "Blue", 1.6);
         Car car3 = new Car("Audi", "White", 2.0);
@@ -23,6 +24,15 @@ public class CarsServiceImpl implements CarsService {
         cars.add(car3);
         cars.add(car4);
         cars.add(car5);
-        return cars;
+
+        List<Car> result = new ArrayList<>();
+        if (count == null) {
+            result = cars;
+        } else if (count > 0 && count < 5) {
+            result = cars.stream().limit(count).collect(Collectors.toList());
+        } else if (count >= 5) {
+            result = cars;
+        }
+        return result;
     }
 }
