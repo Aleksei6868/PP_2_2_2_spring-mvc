@@ -1,24 +1,49 @@
 package web.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import web.config.service.CarsService;
+import web.model.Car;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Controller
 public class HelloController {
 
-	@GetMapping(value = "/")
-	public String printWelcome(ModelMap model) {
-		List<String> messages = new ArrayList<>();
-		messages.add("Hello!");
-		messages.add("I'm Spring MVC application");
-		messages.add("5.2.0 version by sep'19 ");
-		model.addAttribute("messages", messages);
-		return "index";
-	}
-	
+    @Autowired
+    private CarsService carsService;
+
+    @GetMapping(value = "/")
+    public String printWelcome(ModelMap model) {
+        List<String> messages = new ArrayList<>();
+        messages.add("Hello!");
+        messages.add("I'm Spring MVC application");
+        messages.add("5.2.0 version by sep'19 ");
+        model.addAttribute("messages", messages);
+        return "index";
+    }
+
+    @GetMapping(value = "/cars")
+    public String printNambersOfCars(@RequestParam(value = "count", required = false) Integer count, ModelMap model) {
+        List<Car> cars = carsService.getCars();
+        List<Car> result = new ArrayList<>();
+        if (count == null) {
+            result = cars;
+        } else if (count > 0 && count < 5) {
+            result = cars.stream().limit(count).collect(Collectors.toList());
+        } else if (count >= 5) {
+            result = cars;
+        }
+        model.addAttribute("cars", result);
+        return "cars";
+    }
+
+
 }
